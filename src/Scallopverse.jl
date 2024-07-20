@@ -1,5 +1,7 @@
 module Scallopverse
 
-# Write your package code here.
+using WaterLily, StaticArrays
+using Meshing, GeometryBasics
+using CUDA, GLMakie
 
 end
