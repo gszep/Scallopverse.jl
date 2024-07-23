@@ -1,6 +1,7 @@
 # Scallopverse
 
 [![Build Status](https://github.com/gszep/Scallopverse.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/gszep/Scallopverse.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/gszep/Scallopverse.jl/graph/badge.svg?token=WcZxKKZZcO)](https://codecov.io/gh/gszep/Scallopverse.jl)
 
 Let's begin with the Navier–Stokes and continuity equations for the velocity field $\mathbf{u}$ of an incompressible homogenous fluid
 
@@ -27,6 +28,7 @@ $$
 Substitution of $\psi$ into the two-dimensional Navier-Stokes equation yields
 
 $$
-\left(\frac{\partial}{\partial t}+\left(\nabla\times\left(\hat{\mathbf{z}}\psi\right)\right)\cdot\nabla-\nu\nabla^2\right)\nabla^2\psi=0
+\left(\frac{\partial}{\partial t}+\left(\nabla\times\left(\hat{\mathbf{z}}\psi\right)\right)\cdot\nabla-\nu\nabla^2\right)\varphi=0\qquad\varphi=\nabla^2\psi
 $$
 
+Oh dear. Shall we try to come up with a discretisation scheme for this?
