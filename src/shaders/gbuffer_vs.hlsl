@@ -17,7 +17,7 @@ struct gbuffer
 {
 	float4 position : SV_POSITION;
 	float4 normal : NORMAL;
-	float4 depth : COLOR;
+	float4 brush : COLOR;
 };
 
 gbuffer main(vertex input)
@@ -31,7 +31,7 @@ gbuffer main(vertex input)
 	output.position = projection * view_position;
 
 	output.normal = view * output.normal;
-	output.depth = dot(normalize(world_position.xyz), normalize(camera_position));
+	output.brush = dot(normalize(world_position.xyz), normalize(camera_position));
 
 	return output;
 }
