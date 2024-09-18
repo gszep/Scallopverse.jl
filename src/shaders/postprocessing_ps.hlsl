@@ -6,7 +6,7 @@ struct screen
 
 Texture2D normals : register(t0);
 Texture2D brush : register(t1);
-Texture2D edges : register(t2);
+Texture2D velocity : register(t2);
 SamplerState state : register(s0);
 
 struct render_targets

@@ -24,6 +24,6 @@ render_targets main(gbuffer input)
 	output.normal.xy = mouse.xy;
 	output.normal.w = 1;
 
-	output.brush = distance(input.position.xy, mouse.xy*viewport_size) < brush_size ? 1 : 0;
+	output.brush = distance(input.position.xy, mouse.xy * viewport_size) < brush_size ? 1 : 0;
 	return output;
 }

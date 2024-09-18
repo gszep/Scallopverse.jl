@@ -15,7 +15,7 @@ SamplerState state : register(s0);
 
 struct render_targets
 {
-	float4 edges : SV_TARGET0;
+	float4 velocity : SV_TARGET0;
 };
 
 static const float2 d = 1 / viewport_size;
@@ -34,6 +34,6 @@ render_targets main(screen input)
 	render_targets output;
 	input.uv.y = 1 - input.uv.y;
 
-	output.edges = edge(normals, input.uv);
+	output.velocity = edge(normals, input.uv);
 	return output;
 }

@@ -33,16 +33,16 @@
 			</variables>
 			<macros />
 		</pass>
-		<pass name="edges" type="shader" active="true" patchverts="1">
-			<shader type="vs" path="shaders/edges_vs.hlsl" entry="main" />
-			<shader type="ps" path="shaders/edges_ps.hlsl" entry="main" />
+		<pass name="velocity" type="shader" active="true" patchverts="1">
+			<shader type="vs" path="shaders/velocity_vs.hlsl" entry="main" />
+			<shader type="ps" path="shaders/velocity_ps.hlsl" entry="main" />
 			<inputlayout>
 				<item value="Position" semantic="POSITION" />
 				<item value="Texcoord" semantic="TEXCOORD0" />
 			</inputlayout>
-			<rendertexture name="edges" />
+			<rendertexture name="velocity" />
 			<items>
-				<item name="view_edges" type="geometry">
+				<item name="view_velocity" type="geometry">
 					<type>ScreenQuad</type>
 					<width>1</width>
 					<height>1</height>
@@ -90,23 +90,22 @@
 	</pipeline>
 	<objects>
 		<object type="rendertexture" name="normals" format="R32G32B32A32_FLOAT" rsize="1.000000,1.000000" clear="true">
-			<bind slot="0" name="edges" />
+			<bind slot="0" name="velocity" />
 			<bind slot="0" name="postprocessing" />
 		</object>
 		<object type="rendertexture" name="brush" format="R32G32B32A32_FLOAT" rsize="1.000000,1.000000" clear="true">
 			<bind slot="1" name="postprocessing" />
 		</object>
-		<object type="rendertexture" name="edges" format="R32G32B32A32_FLOAT" rsize="1.000000,1.000000" clear="true">
+		<object type="rendertexture" name="velocity" format="R32G32B32A32_FLOAT" rsize="1.000000,1.000000" clear="true">
 			<bind slot="2" name="postprocessing" />
 		</object>
 	</objects>
 	<cameras />
 	<settings>
-		<entry type="property" name="edges" item="pipe" />
-		<entry type="file" name="gbuffer" shader="ps" />
-		<entry type="file" name="edges" shader="ps" />
+		<entry type="file" name="velocity" shader="ps" />
 		<entry type="file" name="postprocessing" shader="ps" />
-		<entry type="pinned" name="edge_thickness" owner="edges" />
+		<entry type="file" name="gbuffer" shader="ps" />
+		<entry type="pinned" name="edge_thickness" owner="velocity" />
 		<entry type="pinned" name="brush_size" owner="gbuffer" />
 		<entry type="camera" fp="false">
 			<distance>2</distance>
