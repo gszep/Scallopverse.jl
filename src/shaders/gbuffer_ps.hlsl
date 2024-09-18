@@ -2,6 +2,7 @@ cbuffer variables : register(b0)
 {
 	float2 viewport_size;
 	float4 mouse;
+	float brush_size;
 };
 
 struct gbuffer
@@ -22,15 +23,7 @@ render_targets main(gbuffer input)
 	render_targets output;
 	output.normal.xy = mouse.xy;
 	output.normal.w = 1;
-	float dist = distance(input.position.xy / viewport_size, mouse.xy);
 
-	if (dist < 0.1)
-	{
-		output.brush = 1;
-	}
-	else
-	{
-		output.brush = 0;
-	}
+	output.brush = distance(input.position.xy, mouse.xy*viewport_size) < brush_size ? 1 : 0;
 	return output;
 }
