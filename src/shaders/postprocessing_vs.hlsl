@@ -18,7 +18,7 @@ struct screen
 
 screen main(vertex input)
 {
-	screen output = (screen)0;
+	screen output;
 
 	float4 world_position = geometry_transform * float4(input.position, 1.0);
 	output.position = orthographic * world_position;

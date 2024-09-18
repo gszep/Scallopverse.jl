@@ -4,9 +4,7 @@ struct screen
 	float2 uv : TEXCOORD;
 };
 
-Texture2D normals : register(t0);
-Texture2D brush : register(t1);
-Texture2D velocity : register(t2);
+Texture2D brush : register(t0);
 SamplerState state : register(s0);
 
 struct render_targets
@@ -16,11 +14,9 @@ struct render_targets
 
 render_targets main(screen input)
 {
-	render_targets output = (render_targets)0;
+	render_targets output;
 	input.uv.y = 1 - input.uv.y;
 
-	output.viewport = normals.Sample(state, input.uv);
-	output.viewport += brush.Sample(state, input.uv);
-
+	output.viewport = brush.Sample(state, input.uv);
 	return output;
 }

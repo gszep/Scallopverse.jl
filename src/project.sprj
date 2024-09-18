@@ -8,8 +8,7 @@
 				<item value="Position" semantic="POSITION" />
 				<item value="Texcoord" semantic="TEXCOORD" />
 			</inputlayout>
-			<rendertexture name="normals" />
-			<rendertexture name="brush" />
+			<rendertexture name="render_target" />
 			<items>
 				<item name="screen_quad" type="geometry">
 					<type>ScreenQuad</type>
@@ -33,31 +32,29 @@
 			</variables>
 			<macros />
 		</pass>
-		<pass name="velocity" type="shader" active="true" patchverts="1">
-			<shader type="vs" path="shaders/velocity_vs.hlsl" entry="main" />
-			<shader type="ps" path="shaders/velocity_ps.hlsl" entry="main" />
-			<inputlayout>
-				<item value="Position" semantic="POSITION" />
-				<item value="Texcoord" semantic="TEXCOORD0" />
-			</inputlayout>
-			<rendertexture name="velocity" />
-			<items>
-				<item name="view_velocity" type="geometry">
-					<type>ScreenQuad</type>
-					<width>1</width>
-					<height>1</height>
-					<depth>1</depth>
-					<topology>TriangleList</topology>
-				</item>
-			</items>
-			<itemvalues />
+		<pass name="brush" type="compute" active="true">
+			<shader type="cs" path="shaders/brush_cs.hlsl" entry="main" />
+			<groupsize x="128" y="128" z="1" />
 			<variables>
-				<variable type="float4x4" name="geometry_transform" system="GeometryTransform" />
-				<variable type="float4x4" name="orthographic" system="Orthographic" />
-				<variable type="float2" name="viewport_size" system="ViewportSize" />
-				<variable type="float" name="edge_thickness">
+				<variable type="int" name="width">
 					<row>
-						<value>4.53000021</value>
+						<value>1024</value>
+					</row>
+				</variable>
+				<variable type="int" name="height">
+					<row>
+						<value>1024</value>
+					</row>
+				</variable>
+				<variable type="float" name="delta">
+					<row>
+						<value>0.100000001</value>
+					</row>
+				</variable>
+				<variable type="float2" name="viewport_size" system="ViewportSize" />
+				<variable type="float" name="evaporation">
+					<row>
+						<value>0.100000001</value>
 					</row>
 				</variable>
 			</variables>
@@ -89,32 +86,44 @@
 		</pass>
 	</pipeline>
 	<objects>
-		<object type="rendertexture" name="normals" format="R32G32B32A32_FLOAT" rsize="1.000000,1.000000" clear="true">
-			<bind slot="0" name="velocity" />
-			<bind slot="0" name="postprocessing" />
+		<object type="image" name="brush" width="1024" height="1024" format="R32G32B32A32_FLOAT">
+			<bind slot="0" name="brush" uav="1" />
+			<bind slot="0" name="postprocessing" uav="0" />
 		</object>
-		<object type="rendertexture" name="brush" format="R32G32B32A32_FLOAT" rsize="1.000000,1.000000" clear="true">
-			<bind slot="1" name="postprocessing" />
-		</object>
-		<object type="rendertexture" name="velocity" format="R32G32B32A32_FLOAT" rsize="1.000000,1.000000" clear="true">
-			<bind slot="2" name="postprocessing" />
+		<object type="rendertexture" name="render_target" rsize="1.000000,1.000000" clear="true">
+			<bind slot="0" name="brush" />
 		</object>
 	</objects>
 	<cameras />
 	<settings>
-		<entry type="file" name="velocity" shader="ps" />
-		<entry type="file" name="postprocessing" shader="ps" />
+		<entry type="property" name="postprocessing" item="pipe" />
+		<entry type="file" name="gbuffer" shader="vs" />
 		<entry type="file" name="gbuffer" shader="ps" />
-		<entry type="pinned" name="edge_thickness" owner="velocity" />
+		<entry type="file" name="brush" shader="cs" />
+		<entry type="file" name="postprocessing" shader="vs" />
+		<entry type="file" name="postprocessing" shader="ps" />
 		<entry type="pinned" name="brush_size" owner="gbuffer" />
+		<entry type="pinned" name="width" owner="brush" />
+		<entry type="pinned" name="height" owner="brush" />
+		<entry type="pinned" name="delta" owner="brush" />
+		<entry type="pinned" name="evaporation" owner="brush" />
 		<entry type="camera" fp="false">
 			<distance>2</distance>
-			<pitch>7</pitch>
-			<yaw>359</yaw>
+			<pitch>88</pitch>
+			<yaw>309</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
 		<entry type="usealpha" val="true" />
+		<entry type="bkpt" file="/home/gszep/.julia/dev/Scallopverse/src/shaders/velocity_ps.hlsl" line="55" use_cond="false" cond="" enabled="true" />
+		<entry type="bkpt" file="/home/gszep/.julia/dev/Scallopverse/src/shaders/velocity_ps.hlsl" line="53" use_cond="false" cond="" enabled="true" />
+		<entry type="bkpt" file="/home/gszep/.julia/dev/Scallopverse/src/shaders/velocity_ps.hlsl" line="54" use_cond="false" cond="" enabled="true" />
+		<entry type="bkpt" file="/home/gszep/.julia/dev/Scallopverse/src/shaders/gbuffer_ps.hlsl" line="38" use_cond="false" cond="" enabled="true" />
+		<entry type="bkpt" file="/home/gszep/.julia/dev/Scallopverse/src/shaders/gbuffer_ps.hlsl" line="37" use_cond="false" cond="" enabled="true" />
+		<entry type="bkpt" file="/home/gszep/.julia/dev/Scallopverse/src/shaders/gbuffer_ps.hlsl" line="36" use_cond="false" cond="" enabled="true" />
+		<entry type="bkpt" file="/home/gszep/.julia/dev/Scallopverse/src/shaders/gbuffer_ps.hlsl" line="35" use_cond="false" cond="" enabled="true" />
+		<entry type="bkpt" file="/home/gszep/.julia/dev/Scallopverse/src/shaders/gbuffer_ps.hlsl" line="34" use_cond="false" cond="" enabled="true" />
+		<entry type="bkpt" file="/home/gszep/.julia/dev/Scallopverse/src/shaders/gbuffer_ps.hlsl" line="33" use_cond="false" cond="" enabled="true" />
 	</settings>
 	<plugindata />
 </project>

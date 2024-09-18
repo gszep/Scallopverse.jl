@@ -1,27 +1,18 @@
 cbuffer variables : register(b0)
 {
+	int width;
+	int height;
+	float delta;
 	float2 viewport_size;
-	float4 mouse;
-	float brush_size;
+	float evaporation;
 };
 
-struct screen
-{
-	float4 position : SV_POSITION;
-	float2 uv : TEXCOORD;
-};
+static const float2 d = 1 / float2(width, height);
 
-Texture2D brush : register(t0);
+RWTexture2D<float4> brush : register(u0);
+Texture2D render_target : register(t0);
 SamplerState state : register(s0);
 
-struct render_targets
-{
-	float4 velocity : SV_TARGET0;
-};
-
-static const float2 d = 1 / viewport_size;
-static const float2 du = float2(d.x, 0);
-static const float2 dv = float2(0, d.y);
 
 float gauss(float sigma, int x, int y)
 {
@@ -45,11 +36,14 @@ float4 gaussian_blur(Texture2D<float4> tex, float2 uv, float sigma = 5.0)
 	return color / normalisation;
 };
 
-render_targets main(screen input)
+[numthreads(8, 8, 1)] void main(uint3 id : SV_DispatchThreadID)
 {
-	render_targets output;
-	input.uv.y = 1 - input.uv.y;
+	if (id.x >= width || id.y >= height)
+	{
+		return;
+	}
 
-	output.velocity = mouse.z > 0 ? gaussian_blur(brush, input.uv, brush_size) : output.velocity;
-	return output;
+	brush[id.xy] = min(1, brush[id.xy] + gaussian_blur(render_target, id.xy * d));
+	brush[id.xy] = max(0, brush[id.xy] - evaporation * delta);
+	
 }
