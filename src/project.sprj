@@ -1,0 +1,209 @@
+<?xml version="1.0"?>
+<project version="2">
+	<pipeline>
+		<pass name="gbuffer" type="shader" active="true" patchverts="1">
+			<shader type="vs" path="shaders/gbuffer_vs.hlsl" entry="main" />
+			<shader type="ps" path="shaders/gbuffer_ps.hlsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Normal" semantic="NORMAL" />
+				<item value="Position" semantic="NORMAL" />
+			</inputlayout>
+			<rendertexture name="normals" />
+			<rendertexture name="depth" />
+			<items>
+				<item name="escher" type="model">
+					<filepath>escher.obj</filepath>
+					<grouponly>false</grouponly>
+					<scaleX>0.100000001</scaleX>
+					<scaleY>0.100000001</scaleY>
+					<scaleZ>0.100000001</scaleZ>
+					<y>-2.13000011</y>
+				</item>
+				<item name="screen_quad" type="geometry">
+					<type>ScreenQuad</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<topology>TriangleList</topology>
+				</item>
+			</items>
+			<itemvalues />
+			<variables>
+				<variable type="float4x4" name="geometry_transform" system="GeometryTransform" />
+				<variable type="float4x4" name="view" system="View" />
+				<variable type="float4x4" name="projection" system="Projection" />
+				<variable type="float3" name="camera_position" system="CameraPosition3" />
+				<variable type="float" name="time" system="Time" />
+				<variable type="float" name="var">
+					<row>
+						<value>0</value>
+					</row>
+				</variable>
+			</variables>
+			<macros />
+		</pass>
+		<pass name="edges" type="shader" active="true" patchverts="1">
+			<shader type="vs" path="shaders/edges_vs.hlsl" entry="main" />
+			<shader type="ps" path="shaders/edges_ps.hlsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Texcoord" semantic="TEXCOORD0" />
+			</inputlayout>
+			<rendertexture name="edges" />
+			<items>
+				<item name="view_edges" type="geometry">
+					<type>ScreenQuad</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<topology>TriangleList</topology>
+				</item>
+			</items>
+			<itemvalues />
+			<variables>
+				<variable type="float4x4" name="geometry_transform" system="GeometryTransform" />
+				<variable type="float4x4" name="orthographic" system="Orthographic" />
+				<variable type="float2" name="viewport_size" system="ViewportSize" />
+				<variable type="float" name="edge_thickness">
+					<row>
+						<value>7.36999989</value>
+					</row>
+				</variable>
+			</variables>
+			<macros />
+		</pass>
+		<pass name="pencils_update" type="compute" active="true">
+			<shader type="cs" path="shaders/pencils_cs.hlsl" entry="main" />
+			<groupsize x="200" y="1" z="1" />
+			<variables>
+				<variable type="float" name="delta" system="TimeDelta" />
+				<variable type="int" name="width">
+					<row>
+						<value>1024</value>
+					</row>
+				</variable>
+				<variable type="int" name="height">
+					<row>
+						<value>1024</value>
+					</row>
+				</variable>
+				<variable type="int" name="num_pencils">
+					<row>
+						<value>4000</value>
+					</row>
+				</variable>
+				<variable type="float" name="pencil_radius">
+					<row>
+						<value>2.13000011</value>
+					</row>
+				</variable>
+				<variable type="float" name="speed">
+					<row>
+						<value>100</value>
+					</row>
+				</variable>
+				<variable type="float" name="time" system="Time" />
+				<variable type="float" name="omega">
+					<row>
+						<value>10</value>
+					</row>
+				</variable>
+			</variables>
+			<macros />
+		</pass>
+		<pass name="traces_update" type="compute" active="true">
+			<shader type="cs" path="shaders/traces_cs.hlsl" entry="main" />
+			<groupsize x="128" y="128" z="1" />
+			<variables>
+				<variable type="int" name="width">
+					<row>
+						<value>1024</value>
+					</row>
+				</variable>
+				<variable type="int" name="height">
+					<row>
+						<value>1024</value>
+					</row>
+				</variable>
+				<variable type="float" name="delta" system="TimeDelta" />
+				<variable type="float" name="evaporation">
+					<row>
+						<value>0.610000014</value>
+					</row>
+				</variable>
+				<variable type="float2" name="viewport_size" system="ViewportSize" />
+			</variables>
+			<macros />
+		</pass>
+		<pass name="postprocessing" type="shader" active="true" patchverts="1">
+			<shader type="vs" path="shaders/postprocessing_vs.hlsl" entry="main" />
+			<shader type="ps" path="shaders/postprocessing_ps.hlsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Texcoord" semantic="TEXCOORD0" />
+			</inputlayout>
+			<rendertexture />
+			<items>
+				<item name="view_postprocessing" type="geometry">
+					<type>ScreenQuad</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<topology>TriangleList</topology>
+				</item>
+			</items>
+			<itemvalues />
+			<variables>
+				<variable type="float4x4" name="orthographic" system="Orthographic" />
+				<variable type="float4x4" name="geometry_transform" system="GeometryTransform" />
+			</variables>
+			<macros />
+		</pass>
+	</pipeline>
+	<objects>
+		<object type="rendertexture" name="normals" format="R32G32B32A32_FLOAT" rsize="1.000000,1.000000" clear="true">
+			<bind slot="0" name="edges" />
+			<bind slot="1" name="pencils_update" />
+			<bind slot="0" name="traces_update" />
+			<bind slot="1" name="postprocessing" />
+		</object>
+		<object type="rendertexture" name="depth" format="R32G32B32A32_FLOAT" rsize="1.000000,1.000000" clear="true">
+			<bind slot="2" name="pencils_update" />
+			<bind slot="2" name="postprocessing" />
+		</object>
+		<object type="rendertexture" name="edges" format="R32G32B32A32_FLOAT" rsize="1.000000,1.000000" clear="true">
+			<bind slot="0" name="pencils_update" />
+			<bind slot="1" name="traces_update" />
+			<bind slot="3" name="postprocessing" />
+		</object>
+		<object type="buffer" name="pencils" size="51200" format="float2;float;" pausedpreview="false">
+			<bind slot="0" name="pencils_update" />
+		</object>
+		<object type="image" name="traces" width="1024" height="1024" format="R32G32B32A32_FLOAT">
+			<bind slot="1" name="pencils_update" uav="1" />
+			<bind slot="0" name="traces_update" uav="1" />
+			<bind slot="0" name="postprocessing" uav="0" />
+		</object>
+	</objects>
+	<cameras />
+	<settings>
+		<entry type="file" name="gbuffer" shader="vs" />
+		<entry type="file" name="gbuffer" shader="ps" />
+		<entry type="pinned" name="edge_thickness" owner="edges" />
+		<entry type="pinned" name="num_pencils" owner="pencils_update" />
+		<entry type="pinned" name="pencil_radius" owner="pencils_update" />
+		<entry type="pinned" name="speed" owner="pencils_update" />
+		<entry type="pinned" name="omega" owner="pencils_update" />
+		<entry type="pinned" name="evaporation" owner="traces_update" />
+		<entry type="camera" fp="false">
+			<distance>25</distance>
+			<pitch>17</pitch>
+			<yaw>238</yaw>
+			<roll>360</roll>
+		</entry>
+		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
+		<entry type="usealpha" val="true" />
+	</settings>
+	<plugindata />
+</project>
