@@ -13,7 +13,6 @@ RWTexture2D<float4> brush : register(u0);
 Texture2D render_target : register(t0);
 SamplerState state : register(s0);
 
-
 float gauss(float sigma, int x, int y)
 {
 	return exp(-(x * x + y * y) / (2 * sigma * sigma));
@@ -45,5 +44,4 @@ float4 gaussian_blur(Texture2D<float4> tex, float2 uv, float sigma = 5.0)
 
 	brush[id.xy] = min(1, brush[id.xy] + gaussian_blur(render_target, id.xy * d));
 	brush[id.xy] = max(0, brush[id.xy] - evaporation * delta);
-	
 }
